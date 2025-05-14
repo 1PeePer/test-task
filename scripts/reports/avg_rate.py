@@ -1,15 +1,14 @@
 from scripts.reports.base import AbstractReport
 from typing import List, Dict
 
-
-class PayoutReport(AbstractReport):
+class AVGRateReport(AbstractReport):
 
     @classmethod
     def generate(cls, employees: List[Dict]) -> str:
-        """Generate a formatted payout report grouped by departments.
+        """Generate a formatted avg rate report grouped by departments.
         
-        Processes employee data to calculate total hours and payout per department,
-        then formats the output as table.
+        Processes employee data to calculate average hourly rates by department,
+        then formats the output as a table.
         
         Args:
             employees: List of dictionaries containing employee data with keys:
@@ -31,49 +30,44 @@ class PayoutReport(AbstractReport):
             if dept not in departments:
                 departments[dept] = {
                     'employees': [],
-                    'total_hours': 0,
-                    'total_payout': 0
+                    'avg_rate': 0
                 }
             
             # Convert string values to integers for calculations
             try:
-                hours = int(emp['hours_worked'])
                 rate = int(emp['rate'])
-                payout = hours * rate
             except (ValueError, KeyError) as e:
                 raise ValueError(f"Invalid employee data format: {e}") from e
             
             # Store employee data
             departments[dept]['employees'].append({
                 'name': emp['name'],
-                'rate': rate,
-                'hours': hours,
-                'payout': payout
+                'rate': rate
             })
-            
-            # Update department totals
-            departments[dept]['total_hours'] += hours
-            departments[dept]['total_payout'] += payout
+
+        # Update department totals
+            departments[dept]['avg_rate'] += rate
         
         # Generate report lines
         report_lines = []
         
         for dept, data in departments.items():
             # Department header
-            report_lines.append(f"  {dept.upper().ljust(11)} name {17 * ' '} rate   hours {3 * ' '} payout")
-            report_lines.append(f"{65 * '='}")
+            report_lines.append(f"  {dept.upper().ljust(12)} name {17 * ' '} rate")
+            report_lines.append(f"{44 * '='}")
             
             # Employee rows
             max_line_length = 0
+            tmp_count = 0
             for emp in data['employees']:
+                tmp_count += 1
+
                 # Format each column with proper alignment
                 name_column = emp['name'].ljust(20)
                 rate_column = str(emp['rate']).ljust(4)
-                hours_column = (str(emp['hours']) + ' h').ljust(7)
-                payout_column = ('$' + str(emp['payout'])).ljust(9)
                 
                 # Build employee row string
-                emp_str = f"| {9 * '-'} | {name_column} | {rate_column} | {hours_column} | {payout_column} |"
+                emp_str = f"| {10 * '-'} | {name_column} | {rate_column} |"
                 report_lines.append(emp_str)
                 
                 # Track maximum line length for separator alignment
@@ -83,12 +77,10 @@ class PayoutReport(AbstractReport):
             report_lines.append(f"{max_line_length * '='}")
             
             # Department totals row
-            total_column = "total :".ljust(9)
-            total_hours_column = (str(data['total_hours']) + ' h').ljust(7)
-            total_payout_column = ('$' + str(data['total_payout'])).ljust(9)
+            total_column = "avg_rate :".ljust(10)
+            avg_rate_column = str(round(data['avg_rate'] / tmp_count, 1)).ljust(4)
             report_lines.append(
-                f"| {total_column} | {len(name_column) * '-'}---{len(rate_column) * '-'} | "
-                f"{total_hours_column} | {total_payout_column} |"
+                f"| {total_column} | {len(name_column) * '-'} | {avg_rate_column} |"
             )
             
             # Section end marker
@@ -96,7 +88,7 @@ class PayoutReport(AbstractReport):
             report_lines.append("\n")  # Empty line between departments
         
         return "\n".join(report_lines)
-    
+
     @classmethod
     def get_name(cls) -> str:
-        return "payout"
+        return "avg_rate"
