@@ -1,5 +1,6 @@
 /|\ Test-Task-Workmate
-    Скрипт для генерации различных отчётов на основе данных из CSV-файлов
+    - Скрипт для генерации различных отчётов на основе данных из CSV-файлов
+    - Скриншоты работы скрипта находятся в папе /screenshots
 
 
 /|\ Назначение
@@ -14,8 +15,8 @@
 
     Клонируйте репозиторий (bash):
 
-        - git clone https://github.com/1PeePer/test-task.git
-        - cd test-task
+        - git clone https://github.com/1PeePer/test-task-warkmate.git
+        - cd test-task-workmate
 
 
 /|\ Использование (базовый запуск в bash)
@@ -130,11 +131,11 @@
     1. Подготовка окружения (bash):
 
         - python -m venv my_env             #Создание виртуального окружения
-        - my-env/Scripts/activate           #Активация в/о
+        - .\my-env.\Scripts.\activate           #Активация в/о
         - pip install -r requirements.txt   #Установка необходимых библиотке
 
     2. Запуск тестов (bash):
-        - pytest tests/ -v
+        - pytest .\tests -v
 
     3. Подробнее написано в файле tests/README.md
 
@@ -143,6 +144,7 @@
 
     test-task/
     |--- data/                  #Папка для хранения CSV
+    |--- screenshots/           #Папка с скриншотами работы скрипта
     |--- scripts/
     |    |-- reports/
     |    |    |- __init__.py
