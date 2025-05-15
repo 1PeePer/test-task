@@ -21,14 +21,10 @@ def main():
         all_employees.extend(read_employee_data(file))
 
     # 3. Generating a report
-    report_class = get_report(args.report)
-    if not report_class:
-        print(f"Неизвестный тип отчёта: {args.report}")
-        return
-    report = report_class.generate(all_employees)
-    print(report)
+    report = get_report(args.report).generate(all_employees)
+    print(report[-1])
     
-    return json.dumps(report, indent=2)
+    return json.dumps(report[0], indent=2)
 
 if __name__ == '__main__':
     main()

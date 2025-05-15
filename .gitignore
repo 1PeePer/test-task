@@ -1,5 +1,12 @@
 # Папки с кэшем Python
 __pycache__/
 
+# Файлы конфигурации pytest
+.pytest_cache/
+*.coverage
+
 # Папка с виртуальным окружением 
 my-env/
+
+# Папка с результатами тестирования (HTML)
+htmlcov/

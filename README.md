@@ -1,4 +1,4 @@
-/|\Test-Task
+/|\ Test-Task-Workmate
     Скрипт для генерации различных отчётов на основе данных из CSV-файлов
 
 
@@ -88,7 +88,7 @@
         2. avg_rate - Отчет о средней ставке по отделам  #Пример
 
 
-/|\ Добавление новых отчётов:
+/|\ Добавление новых отчётов
 
     1. Создайте файл в scripts/reports/ (например new_report.py)
 
@@ -127,35 +127,41 @@
 
 /|\ Тестирование
 
-    1. Запуск тестов (bash):
+    1. Подготовка окружения (bash):
+
+        - python -m venv my_env             #Создание виртуального окружения
+        - my-env/Scripts/activate           #Активация в/о
+        - pip install -r requirements.txt   #Установка необходимых библиотке
+
+    2. Запуск тестов (bash):
         - pytest tests/ -v
 
-    2. Проверка покрытия (bash):
-        - pytest --cov=scripts tests/
+    3. Подробнее написано в файле tests/README.md
 
 
 /|\ Структура проекта
 
     test-task/
-    |--- main.py                # Точка входа
+    |--- data/                  #Папка для хранения CSV
     |--- scripts/
-    |    |-- __init.py
-    |    |-- file_reader.py     # Чтение CSV
     |    |-- reports/
-    |        |- __init__.py
-    |        |- base.py         # Базовый класс отчётов
-    |        |- payout.py       # Отчёт по выплатам
-    |        |- avg_rate.py     # Средняя ставка
-    |--- data/                  # Папка для хранения CSV
+    |    |    |- __init__.py
+    |    |    |- avg_rate.py    #Средняя ставка
+    |    |    |- base.py        #Базовый класс отчётов
+    |    |    |- payout.py      #Отчёт по выплатам
+    |    |-- __init__.py
+    |    |-- file_reader.py     # Чтение CSV
     |--- tests/                 # Тесты
+    |--- .gitignore             # .gitignore файл
     |--- README.md              # Этот файл
-    |--- .gitignore
+    |--- requirements.txt       # Файл с версиями библиотек
 
 
 /|\ Примеры CSV-файлов лежат в папке:
 
     test-task/
     |--- data/                  # Папка для хранения CSV файлов с данными
-        |-- data1.csv           # 1-ый прмер файла
-        |-- data2.csv           # 2-ый прмер файла
-        |-- data3.csv           # 3-ый прмер файла
+        |-- data1.csv           # 1-ый пример файла
+        |-- data2.csv           # 2-ый пример файла
+        |-- data3.csv           # 3-ый пример файла
+        |-- data4.csv           # 4-ый пример файла 

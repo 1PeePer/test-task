@@ -34,7 +34,7 @@ def read_employee_data(filepath: str) -> List[Dict[str, str]]:
         # Read and process headers
         first_line = file.readline().strip()
         if not first_line:
-            raise ValueError("Empty CSV file provided")
+            raise ValueError(f"Empty CSV file provided: {filepath}")
             
         original_headers = first_line.split(',')
         
@@ -49,20 +49,17 @@ def read_employee_data(filepath: str) -> List[Dict[str, str]]:
             normalized_headers.append(normalized_header)
         
         if not rate_column_found:
-            raise ValueError("No rate column (hourly_rate/rate/salary) found in CSV")
+            raise ValueError("No rate column in CSV")
         
         # Process employee data
-        for line_number, line in enumerate(file, start=2):
+        for line in file:
             line = line.strip()
             if not line:
                 continue  # Skip empty lines
                 
             values = line.split(',')
             if len(values) != len(normalized_headers):
-                raise ValueError(
-                    f"Line {line_number}: expected {len(normalized_headers)} columns, "
-                    f"got {len(values)}"
-                )
+                raise ValueError("Number of cells in headers and rows - do not match, incorrect data file")
             
             # Create employee dictionary with normalized headers
             employee = {

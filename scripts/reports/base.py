@@ -6,7 +6,7 @@ class AbstractReport(ABC):
     
     @classmethod
     @abstractmethod
-    def generate(cls, employees: List[Dict]) -> str:
+    def generate(cls, employees: List[Dict]) -> List:
         """Report generation.
         
         Args:

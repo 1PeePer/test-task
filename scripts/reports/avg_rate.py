@@ -4,7 +4,7 @@ from typing import List, Dict
 class AVGRateReport(AbstractReport):
 
     @classmethod
-    def generate(cls, employees: List[Dict]) -> str:
+    def generate(cls, employees: List[Dict]) -> List:
         """Generate a formatted avg rate report grouped by departments.
         
         Processes employee data to calculate average hourly rates by department,
@@ -34,19 +34,34 @@ class AVGRateReport(AbstractReport):
                 }
             
             # Convert string values to integers for calculations
-            try:
-                rate = int(emp['rate'])
-            except (ValueError, KeyError) as e:
-                raise ValueError(f"Invalid employee data format: {e}") from e
+            name = emp['name']
+            rate = int(emp['rate'])
+            hours = int(emp['hours_worked'])
+            payout = hours * rate
             
             # Store employee data
             departments[dept]['employees'].append({
-                'name': emp['name'],
-                'rate': rate
+                'name': name,
+                'rate': rate,
+                'hours_worked': hours,
+                'payout': payout
             })
 
         # Update department totals
             departments[dept]['avg_rate'] += rate
+        #data['avg_rate'] / len(data['employees'])
+
+        json_data = {
+            "report_type": "avg_rate",
+            "data": [
+                {
+                    "department": dept,
+                    "employees": data['employees'],
+                    "avg_rate": round(data['avg_rate'] / len(data['employees']), 1)
+                }
+                for dept, data in departments.items()
+            ]
+        }
         
         # Generate report lines
         report_lines = []
@@ -58,9 +73,7 @@ class AVGRateReport(AbstractReport):
             
             # Employee rows
             max_line_length = 0
-            tmp_count = 0
             for emp in data['employees']:
-                tmp_count += 1
 
                 # Format each column with proper alignment
                 name_column = emp['name'].ljust(20)
@@ -78,7 +91,7 @@ class AVGRateReport(AbstractReport):
             
             # Department totals row
             total_column = "avg_rate :".ljust(10)
-            avg_rate_column = str(round(data['avg_rate'] / tmp_count, 1)).ljust(4)
+            avg_rate_column = str(round(data['avg_rate'] / len(data['employees']), 1)).ljust(4)
             report_lines.append(
                 f"| {total_column} | {len(name_column) * '-'} | {avg_rate_column} |"
             )
@@ -86,8 +99,10 @@ class AVGRateReport(AbstractReport):
             # Section end marker
             report_lines.append(f"{max_line_length * '^'}")
             report_lines.append("\n")  # Empty line between departments
+
+            txt_data = "\n".join(report_lines)
         
-        return "\n".join(report_lines)
+        return [json_data, txt_data]
 
     @classmethod
     def get_name(cls) -> str:

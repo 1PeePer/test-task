@@ -5,7 +5,7 @@ from typing import List, Dict
 class PayoutReport(AbstractReport):
 
     @classmethod
-    def generate(cls, employees: List[Dict]) -> str:
+    def generate(cls, employees: List[Dict]) -> List:
         """Generate a formatted payout report grouped by departments.
         
         Processes employee data to calculate total hours and payout per department,
@@ -36,24 +36,36 @@ class PayoutReport(AbstractReport):
                 }
             
             # Convert string values to integers for calculations
-            try:
-                hours = int(emp['hours_worked'])
-                rate = int(emp['rate'])
-                payout = hours * rate
-            except (ValueError, KeyError) as e:
-                raise ValueError(f"Invalid employee data format: {e}") from e
+            name = emp['name']
+            rate = int(emp['rate'])
+            hours = int(emp['hours_worked'])
+            payout = hours * rate
             
             # Store employee data
             departments[dept]['employees'].append({
-                'name': emp['name'],
+                'name': name,
                 'rate': rate,
-                'hours': hours,
+                'hours_worked': hours,
                 'payout': payout
             })
             
             # Update department totals
             departments[dept]['total_hours'] += hours
             departments[dept]['total_payout'] += payout
+
+        
+        json_data = {
+            "report_type": "payout",
+            "data": [
+                {
+                    "department": dept,
+                    "employees": data['employees'],
+                    "total_hours": data['total_hours'],
+                    "total_payout": data['total_payout']
+                }
+                for dept, data in departments.items()
+            ]
+        }
         
         # Generate report lines
         report_lines = []
@@ -69,7 +81,7 @@ class PayoutReport(AbstractReport):
                 # Format each column with proper alignment
                 name_column = emp['name'].ljust(20)
                 rate_column = str(emp['rate']).ljust(4)
-                hours_column = (str(emp['hours']) + ' h').ljust(7)
+                hours_column = (str(emp['hours_worked']) + ' h').ljust(7)
                 payout_column = ('$' + str(emp['payout'])).ljust(9)
                 
                 # Build employee row string
@@ -94,8 +106,10 @@ class PayoutReport(AbstractReport):
             # Section end marker
             report_lines.append(f"{max_line_length * '^'}")
             report_lines.append("\n")  # Empty line between departments
+
+            txt_data = "\n".join(report_lines)
         
-        return "\n".join(report_lines)
+        return [json_data, txt_data]
     
     @classmethod
     def get_name(cls) -> str:
